@@ -16,6 +16,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import Logo from './Logo';
+import { getAvatarUrl } from '../utils/helpers';
 
 const Layout = () => {
   const { user, logout, isAdmin, isTeacher } = useAuth();
@@ -24,6 +25,7 @@ const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
   const [teacherDropdownOpen, setTeacherDropdownOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
 
   const handleLogout = async () => {
     await logout();
@@ -234,11 +236,12 @@ const Layout = () => {
                 <div className="ml-3">
                   <div className="flex items-center">
                     <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                      {user?.avatar ? (
+                      {!avatarError && getAvatarUrl(user?.avatar, user?.email) ? (
                         <img
                           className="h-8 w-8 rounded-full"
-                          src={user.avatar}
-                          alt={user.name}
+                          src={getAvatarUrl(user?.avatar, user?.email)}
+                          alt={user?.name}
+                          onError={() => setAvatarError(true)}
                         />
                       ) : (
                         <span className="text-sm font-medium text-primary-600">
@@ -295,11 +298,12 @@ const Layout = () => {
             <div className="ml-4 flex items-center md:ml-6">
               <div className="flex items-center">
                 <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center">
-                  {user?.avatar ? (
+                  {!avatarError && getAvatarUrl(user?.avatar, user?.email) ? (
                     <img
                       className="h-8 w-8 rounded-full"
-                      src={user.avatar}
-                      alt={user.name}
+                      src={getAvatarUrl(user?.avatar, user?.email)}
+                      alt={user?.name}
+                      onError={() => setAvatarError(true)}
                     />
                   ) : (
                     <span className="text-sm font-medium text-primary-600">

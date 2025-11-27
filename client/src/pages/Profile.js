@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useAuth } from '../context/AuthContext';
 import { authAPI, questionsAPI, answersAPI } from '../utils/api';
-import { formatRole, getInitials } from '../utils/helpers';
+import { formatRole, getInitials, getAvatarUrl } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { User, Mail, GraduationCap, Edit3, Save, X, RefreshCw } from 'lucide-react';
 
 const Profile = () => {
   const { user, refreshProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     department: user?.department || '',
@@ -109,11 +110,12 @@ const Profile = () => {
           {/* Avatar */}
           <div className="flex-shrink-0">
             <div className="h-24 w-24 rounded-full bg-primary-100 flex items-center justify-center">
-              {user?.avatar ? (
+              {!avatarError && getAvatarUrl(user?.avatar, user?.email) ? (
                 <img
                   className="h-24 w-24 rounded-full"
-                  src={user.avatar}
-                  alt={user.name}
+                  src={getAvatarUrl(user?.avatar, user?.email)}
+                  alt={user?.name}
+                  onError={() => setAvatarError(true)}
                 />
               ) : (
                 <span className="text-2xl font-medium text-primary-600">

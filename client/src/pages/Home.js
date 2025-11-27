@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Search, Filter, MessageSquare, CheckCircle, Clock, User, Tag, X } from 'lucide-react';
 import { questionsAPI } from '../utils/api';
 import QuestionCard from '../components/QuestionCard';
@@ -8,11 +8,9 @@ import toast from 'react-hot-toast';
 import GradientHeading from '../components/ui/GradientHeading';
 import GlowButton from '../components/ui/GlowButton';
 import GlassCard from '../components/ui/GlassCard';
-import { useAuth } from '../context/AuthContext';
 
 const Home = () => {
   const navigate = useNavigate();
-  const { isStudent } = useAuth();
   const [activeTab, setActiveTab] = useState('unanswered');
   const [showInlineForm, setShowInlineForm] = useState(false);
   const [newQuestion, setNewQuestion] = useState({
@@ -177,52 +175,6 @@ const Home = () => {
         </GlassCard>
       )}
 
-      {/* Smart Doubt Assistant */}
-      {isStudent() && (
-        <GlassCard className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Smart Doubt Assistant</h3>
-            <GlowButton as={Link} to="/all-questions" variant="secondary" className="px-3 py-1">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Explore All Questions
-            </GlowButton>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h4 className="font-medium text-blue-900 mb-2">Suggested Answers</h4>
-              <p className="text-sm text-blue-800">AI-powered recommendations will appear here based on your recent activity.</p>
-              <div className="mt-3 text-xs text-blue-700">Coming soon</div>
-            </div>
-            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-              <h4 className="font-medium text-purple-900 mb-2">Similar Past Questions</h4>
-              <p className="text-sm text-purple-800">We’ll surface similar solved questions to speed up doubt-clearing.</p>
-              <div className="mt-3 text-xs text-purple-700">Coming soon</div>
-            </div>
-            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <h4 className="font-medium text-green-900 mb-2">Progress Timeline</h4>
-              <p className="text-sm text-green-800">Track doubts resolved weekly and see your improvement.</p>
-              <div className="mt-3 text-xs text-green-700">Coming soon</div>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-              <h4 className="font-medium text-orange-900 mb-2">Subject Understanding Levels</h4>
-              <p className="text-sm text-orange-800">Visual progress indicators for subjects will be shown here.</p>
-              <div className="mt-3 text-xs text-orange-700">Coming soon</div>
-            </div>
-            <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
-              <h4 className="font-medium text-pink-900 mb-2">Badges & Streaks</h4>
-              <p className="text-sm text-pink-800">Earn badges for participation and keep streaks alive.</p>
-              <div className="mt-3 text-xs text-pink-700">Coming soon</div>
-            </div>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h4 className="font-medium text-gray-900 mb-2">Leaderboard</h4>
-              <p className="text-sm text-gray-700">Top students by helpful answers and resolved doubts.</p>
-              <div className="mt-3 text-xs text-gray-600">Coming soon</div>
-            </div>
-          </div>
-        </GlassCard>
-      )}
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
