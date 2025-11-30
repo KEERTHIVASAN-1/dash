@@ -1,14 +1,17 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Vite uses import.meta.env — NOT process.env
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+console.log("🔥 Using API Base URL:", API_BASE_URL);
 
 // Create axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL,   // <-- corrected
   timeout: 10000,
 });
 
-// Request interceptor to add auth token
+// Attach token automatically
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -17,12 +20,10 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors
+// Auto redirect to login on expired token
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -34,65 +35,62 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
+// ---------------- AUTH ----------------
 export const authAPI = {
-  getProfile: () => api.get('/api/auth/me'),
-  updateProfile: (data) => api.put('/api/auth/profile', data),
-  logout: () => api.post('/api/auth/logout'),
-  checkEmail: (email) => api.get(`/api/auth/check-email/${email}`),
+  getProfile: () => api.get('/auth/me'),
+  updateProfile: (data) => api.put('/auth/profile', data),
+  logout: () => api.post('/auth/logout'),
+  checkEmail: (email) => api.get(`/auth/check-email/${email}`),
 };
 
-// Questions API
+// ---------------- QUESTIONS ----------------
 export const questionsAPI = {
-  // Return response data for easier consumption in components
-  getAll: (params) => api.get('/api/questions', { params }).then(res => res.data),
-  getById: (id) => api.get(`/api/questions/${id}`),
-  create: (data) => api.post('/api/questions', data),
-  update: (id, data) => api.put(`/api/questions/${id}`, data),
-  delete: (id) => api.delete(`/api/questions/${id}`),
-  like: (id) => api.post(`/api/questions/${id}/like`),
-  resolve: (id) => api.patch(`/api/questions/${id}/resolve`),
-  getUserQuestions: (userId, params) => api.get(`/api/questions/user/${userId}`, { params })
+  getAll: (params) => api.get('/questions', { params }).then(res => res.data),
+  getById: (id) => api.get(`/questions/${id}`),
+  create: (data) => api.post('/questions', data),
+  update: (id, data) => api.put(`/questions/${id}`, data),
+  delete: (id) => api.delete(`/questions/${id}`),
+  like: (id) => api.post(`/questions/${id}/like`),
+  resolve: (id) => api.patch(`/questions/${id}/resolve`),
+  getUserQuestions: (userId, params) => api.get(`/questions/user/${userId}`, { params }),
 };
 
-// Answers API
+// ---------------- ANSWERS ----------------
 export const answersAPI = {
-  getByQuestion: (questionId, params) => api.get(`/api/answers/question/${questionId}`, { params }),
-  getByUser: (userId, params) => api.get(`/api/answers/user/${userId}`, { params }),
-  create: (data) => api.post('/api/answers', data),
-  update: (id, data) => api.put(`/api/answers/${id}`, data),
-  delete: (id) => api.delete(`/api/answers/${id}`),
-  like: (id) => api.post(`/api/answers/${id}/like`),
-  accept: (id) => api.patch(`/api/answers/${id}/accept`),
-  verify: (id) => api.patch(`/api/answers/${id}/verify`),
-  getComments: (id, params) => api.get(`/api/answers/${id}/comments`, { params }),
-  createComment: (id, data) => api.post(`/api/answers/${id}/comments`, data),
-  addComment: (id, data) => api.post(`/api/answers/${id}/comments`, data), // Alias for createComment
-  updateComment: (commentId, data) => api.put(`/api/answers/comments/${commentId}`, data),
-  deleteComment: (commentId) => api.delete(`/api/answers/comments/${commentId}`),
-  likeComment: (commentId) => api.post(`/api/answers/comments/${commentId}/like`)
+  getByQuestion: (qid, params) => api.get(`/answers/question/${qid}`, { params }),
+  getByUser: (uid, params) => api.get(`/answers/user/${uid}`, { params }),
+  create: (data) => api.post('/answers', data),
+  update: (id, data) => api.put(`/answers/${id}`, data),
+  delete: (id) => api.delete(`/answers/${id}`),
+  like: (id) => api.post(`/answers/${id}/like`),
+  accept: (id) => api.patch(`/answers/${id}/accept`),
+  verify: (id) => api.patch(`/answers/${id}/verify`),
+  getComments: (id, params) => api.get(`/answers/${id}/comments`, { params }),
+  createComment: (id, data) => api.post(`/answers/${id}/comments`, data),
+  updateComment: (cid, data) => api.put(`/answers/comments/${cid}`, data),
+  deleteComment: (cid) => api.delete(`/answers/comments/${cid}`),
+  likeComment: (cid) => api.post(`/answers/comments/${cid}/like`),
 };
 
-// Admin API
+// ---------------- ADMIN ----------------
 export const adminAPI = {
-  // Return response data for consistent consumption across dashboard queries
-  getStats: () => api.get('/api/admin/stats').then(res => res.data),
-  getUsers: (params) => api.get('/api/admin/users', { params }).then(res => res.data),
-  updateUserRole: (userId, role) => api.patch(`/api/admin/users/${userId}/role`, { role }),
-  toggleUserStatus: (userId) => api.patch(`/api/admin/users/${userId}/status`),
-  getQuestions: (params) => api.get('/api/admin/questions', { params }).then(res => res.data),
-  archiveQuestion: (questionId) => api.patch(`/api/admin/questions/${questionId}/archive`),
-  deleteQuestion: (questionId) => api.delete(`/api/admin/questions/${questionId}`),
-  deleteAnswer: (answerId) => api.delete(`/api/admin/answers/${answerId}`),
-  getLogs: () => api.get('/api/admin/logs').then(res => res.data),
+  getStats: () => api.get('/admin/stats').then(res => res.data),
+  getUsers: (params) => api.get('/admin/users', { params }).then(res => res.data),
+  updateUserRole: (uid, role) => api.patch(`/admin/users/${uid}/role`, { role }),
+  toggleUserStatus: (uid) => api.patch(`/admin/users/${uid}/status`),
+  getQuestions: (params) => api.get('/admin/questions', { params }).then(res => res.data),
+  archiveQuestion: (qid) => api.patch(`/admin/questions/${qid}/archive`),
+  deleteQuestion: (qid) => api.delete(`/admin/questions/${qid}`),
+  deleteAnswer: (aid) => api.delete(`/admin/answers/${aid}`),
+  getLogs: () => api.get('/admin/logs').then(res => res.data),
 };
 
-// Notifications API
+// ---------------- NOTIFICATIONS ----------------
 export const notificationsAPI = {
-  getAll: () => api.get('/api/notifications'),
-  markAsRead: (notificationId) => api.put(`/api/notifications/${notificationId}/read`),
-  markAllAsRead: () => api.put('/api/notifications/read-all'),
-  delete: (notificationId) => api.delete(`/api/notifications/${notificationId}`),
+  getAll: () => api.get('/notifications'),
+  markAsRead: (id) => api.put(`/notifications/${id}/read`),
+  markAllAsRead: () => api.put('/notifications/read-all'),
+  delete: (id) => api.delete(`/notifications/${id}`),
 };
 
 export default api;

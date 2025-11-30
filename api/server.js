@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -18,88 +16,118 @@ const notificationRoutes = require('./models/routes/notifications');
 
 const app = express();
 
-// Security middleware
+/* -----------------------------------------
+   SECURITY MIDDLEWARE
+----------------------------------------- */
 app.use(helmet());
 
-// Rate limiting (disabled in development)
 if (process.env.NODE_ENV === 'production') {
   const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 150,
   });
   app.use(limiter);
 }
 
-// CORS configuration
+/* -----------------------------------------
+   CORS CONFIG (🔥 FIXED FOR PRODUCTION)
+----------------------------------------- */
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,          // Vercel frontend (production)
+  "http://localhost:3000",         // local dev
+  "http://localhost:3001"          // alternative dev
+].filter(Boolean);
+
+console.log("Allowed CORS origins:", allowedOrigins);
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://yourdomain.com']
-    : ['http://localhost:3000', 'http://localhost:3001', process.env.CLIENT_URL].filter(Boolean),
+  origin: allowedOrigins,
   credentials: true
 }));
 
-// Session configuration
+/* -----------------------------------------
+   SESSION + PASSPORT
+----------------------------------------- */
 app.use(session({
-  secret: process.env.JWT_SECRET || 'fallback-secret-key-for-development-only',
+  secret: process.env.JWT_SECRET || "fallback-secret-key",
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
-// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
+/* -----------------------------------------
+   PARSING
+----------------------------------------- */
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/college-qa';
+/* -----------------------------------------
+   MONGODB CONNECTION
+----------------------------------------- */
+const mongoUri = process.env.MONGODB_URI;
+
 mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+.then(() => console.log("MongoDB connected successfully"))
+.catch(err => console.log("MongoDB connection error:", err));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/questions', questionRoutes);
-app.use('/api/answers', answerRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/notifications', notificationRoutes);
+/* -----------------------------------------
+   ROUTES
+----------------------------------------- */
+app.use("/api/auth", authRoutes);
+app.use("/api/questions", questionRoutes);
+app.use("/api/answers", answerRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+/* -----------------------------------------
+   HEALTH CHECK
+----------------------------------------- */
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "OK",
+    env: process.env.NODE_ENV,
+    time: new Date().toISOString()
   });
 });
 
-// Error handling middleware
+/* -----------------------------------------
+   GLOBAL ERROR HANDLER
+----------------------------------------- */
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+  console.error("ERROR:", err);
+  res.status(500).json({
+    message: "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.message : undefined
   });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+/* -----------------------------------------
+   404 HANDLER
+----------------------------------------- */
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
+/* -----------------------------------------
+   START SERVER
+----------------------------------------- */
 const PORT = process.env.PORT || 5000;
 
- app.listen(PORT, () => {
-   console.log(`Server running on port ${PORT}`);
-   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-   console.log(`MongoDB URI: ${mongoUri}`);
- });
+app.listen(PORT, () => {
+  console.log("======================================");
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`Frontend URL: ${process.env.CLIENT_URL}`);
+  console.log(`MongoDB URI: ${mongoUri}`);
+  console.log("======================================");
+});
