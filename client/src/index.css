@@ -137,6 +137,6 @@
 }
 
 /* Glassmorphism utility */
-.glass-xl {
-  @apply bg-white border border-gray-200 rounded-2xl;
-}
+  .glass-xl {
+  @apply bg-white border border-gray-200 rounded-2xl;    
+  }

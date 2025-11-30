@@ -280,8 +280,9 @@ const Layout = () => {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="lg:pl-64 flex flex-col flex-1">
+  {/* Main content */}
+  <div className="lg:pl-64 flex flex-col flex-1">
+        
         {/* Top navigation */}
         <div className="sticky top-0 z-10 flex h-16 flex-shrink-0 bg-white border-b border-gray-200 lg:hidden">
           <button
@@ -312,6 +313,7 @@ const Layout = () => {
                   )}
                 </div>
                 <span className="ml-2 text-sm font-medium text-gray-700">{user?.name}</span>
+                
               </div>
             </div>
           </div>
