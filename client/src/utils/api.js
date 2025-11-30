@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Vite uses import.meta.env — NOT process.env
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL =  process.env.REACT_APP_API_URL;
 
 console.log("🔥 Using API Base URL:", API_BASE_URL);
 
