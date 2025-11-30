@@ -3,7 +3,8 @@ import { formatRelativeTime, getInitials } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 import { MessageCircle, Heart, Reply, Edit, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { answersAPI } from '../utils/api';
+import { answersAPI } from "../../utils/api";
+
 
 const CommentSection = ({ answerId, comments = [], onCommentAdded }) => {
   const { user } = useAuth();

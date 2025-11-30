@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { formatRelativeTime, getInitials } from '../utils/helpers';
-import { answersAPI } from '../utils/api';
+import { answersAPI } from "../../utils/api";
+
 import toast from 'react-hot-toast';
 
 const QuestionCard = ({ question, onLike, onView, onAnswered, showActions = true }) => {
