@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-// Vite uses import.meta.env — NOT process.env
-const API_BASE_URL =  process.env.REACT_APP_API_URL;
+// Get Vite environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 console.log("🔥 Using API Base URL:", API_BASE_URL);
 
 // Create axios instance
 const api = axios.create({
-  baseURL: API_BASE_URL,   // <-- corrected
+  baseURL: API_BASE_URL,
   timeout: 10000,
 });
 
