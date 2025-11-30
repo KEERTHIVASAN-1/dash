@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { ArrowLeft, Heart, MessageCircle, Check, Plus } from 'lucide-react';
-import { questionsAPI, answersAPI } from '../utils/api';
+import { questionsAPI, answersAPI } from '../../utils/api';
 import { formatRelativeTime, getInitials, canEdit, canDelete } from '../utils/helpers';
 import { useAuth } from '../context/AuthContext';
 import AnswerCard from '../components/AnswerCard';

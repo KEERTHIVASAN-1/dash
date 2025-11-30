@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from 'react-query';
 import { useAuth } from '../context/AuthContext';
-import { authAPI, questionsAPI, answersAPI } from '../utils/api';
+import { authAPI, questionsAPI, answersAPI } from '../../utils/api';
 import { formatRole, getInitials, getAvatarUrl } from '../utils/helpers';
 import toast from 'react-hot-toast';
 import { User, Mail, GraduationCap, Edit3, Save, X, RefreshCw } from 'lucide-react';
